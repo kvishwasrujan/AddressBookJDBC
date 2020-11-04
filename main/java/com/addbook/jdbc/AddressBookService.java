@@ -14,8 +14,8 @@ import java.util.Map;
  *
  */
 public class AddressBookService<AddressBookDBServiceNew> {
-	private List<Contact> contactList;
-	private AddressBookDBService addressBookDBService;
+	private static List<Contact> contactList;
+	private static AddressBookDBService addressBookDBService;
 	private AddressBookDBServiceNew addressBookDBServiceNew;
 	private Map<String, Integer> contactByCity;
 
@@ -26,11 +26,10 @@ public class AddressBookService<AddressBookDBServiceNew> {
 
 	public AddressBookService() {
 		addressBookDBService = AddressBookDBService.getInstance();
-		addressBookDBServiceNew = AddressBookDBServiceNew.getInstance();
 	}
 
-	public List<Contact> readContactData() {
-		this.contactList = addressBookDBService.readData();
+	public static List<Contact> readContactData() {
+		contactList = addressBookDBService.readData();
 		return contactList;
 	}
 
@@ -43,8 +42,8 @@ public class AddressBookService<AddressBookDBServiceNew> {
 			Contact.address = address;
 	}
 
-	private Contact getContactData(String name) {
-		return this.contactList.stream().filter(contact -> contact.firstName.equals(name)).findFirst().orElse(null);
+	private static Contact getContactData(String name) {
+		return contactList.stream().filter(contact -> contact.firstName.equals(name)).findFirst().orElse(null);
 	}
 
 	public static boolean checkContactDetailsInSyncWithDB(String name) {
@@ -68,4 +67,24 @@ public class AddressBookService<AddressBookDBServiceNew> {
 				email);
 	}
 
+	public static void addNewMultipleContacts(List<Contact> contacts) {
+		Map<Integer, Boolean> status = new HashMap<>();
+		contacts.forEach(contact -> {
+			status.put(contact.hashCode(), false);
+			Runnable task = () -> {
+				AddressBookDBService.insertNewContactToDB("2020-10-30", contact.getFirstName(), contact.getLastName(),
+						contact.getAddress(), contact.getCity(), contact.getState(), contact.getZip(),
+						contact.getPhoneNumber(), contact.getEmail());
+				status.put(contact.hashCode(), true);
+
+			};
+			Thread thread = new Thread(task, contact.getFirstName());
+			thread.start();
+		});
+		while (status.containsValue(false))
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+			}
+	}
 }

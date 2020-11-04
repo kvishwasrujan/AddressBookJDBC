@@ -1,16 +1,13 @@
 package com.addbook.jdbc;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-
-import com.addbook.jdbc.AddressBookService;
-import com.addbook.jdbc.Contact;
-
 import junit.framework.Assert;
 
 public class AddressBookTest {
@@ -55,6 +52,21 @@ public class AddressBookTest {
 				"7289472389", "vishwasr@gmail.com");
 		boolean isSynced = AddressBookService.checkContactDetailsInSyncWithDB("srujan");
 		assertTrue(isSynced);
+	}
+
+	@Test
+	public void givenMultipeContacts_WhenAddedToDBWithMultiThreads_ShouldSyncWithDB() {
+		List<Contact> contacts = new ArrayList<>() {
+			{
+				add(new Contact("srujan", "konda", "gandhinagar", "hnk", "wgl", "682011", "8725120000",
+						"vishwasr@gmail.com"));
+				add(new Contact("rohith", "goud", "bank colony", "karimanagar", "telangana", "683022", "8725120022",
+						"rohithgoud@gmail.com"));
+			}
+		};
+		AddressBookService.addNewMultipleContacts(contacts);
+		List<Contact> contactList = AddressBookService.readContactData();
+		Assert.assertEquals(7, contactList.size());
 	}
 
 }
