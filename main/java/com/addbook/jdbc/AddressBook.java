@@ -15,6 +15,10 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
 
+/**
+ * @author vishw
+ *
+ */
 public class AddressBook {
 	public static String ADDRESS_BOOK_CSV = "C:\\Users\\.eclipse\\org.eclipse.tips.state\\com.addbook.jdbc\\csv.csv";
 
@@ -38,6 +42,10 @@ public class AddressBook {
 		writer.close();
 	}
 
+	/**
+	 * @throws CsvValidationException
+	 * @throws IOException
+	 */
 	private void ReadData() throws CsvValidationException, IOException {
 		BufferedReader r = Files.newBufferedReader(Paths.get(ADDRESS_BOOK_CSV));
 		CSVReader csvReader = new CSVReader(r);

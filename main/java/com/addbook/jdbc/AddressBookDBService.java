@@ -43,10 +43,10 @@ public class AddressBookDBService {
 	}
 
 	public List<Contact> readData() {
-		String sql = "\"SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,contacts.city,\"\r\n"
-				+ "					+ \"contacts.state,contacts.zip,contacts.phone_number,contacts.email,address_book_name_and_type.Address_book_type \"\r\n"
-				+ "					+ \" from contacts inner join address_book_name_and_type \"\r\n"
-				+ "					+ \" on contacts.address_book_name=address_book_name_and_type.Address_book_name WHERE firstName=?";
+		String sql = "SELECT c.first_name, c.last_name,c.address_book_name,c.address,c.city,"
+				+ "c.state,c.zip,c.phone_number,c.email,abd.address_book_type "
+				+ "from contact_details c inner join address_book_dict abd "
+				+ "on c.address_book_name=abd.address_book_name; ";
 		return this.getContactDetailsUsingSqlQuery(sql);
 	}
 
@@ -89,10 +89,6 @@ public class AddressBookDBService {
 		return this.updateContactDataUsingPreparedStatement(name, address);
 	}
 
-	/**
-	 * @param first_name
-	 * @param address
-	 */
 	private int updateContactDataUsingPreparedStatement(String first_name, String address) {
 		try (Connection connection = addressBookDBService.getConnection();) {
 			String sql = "update contact_details set address=? where first_name=?";
@@ -107,9 +103,6 @@ public class AddressBookDBService {
 		return 0;
 	}
 
-	/**
-	 * @param name
-	 */
 	public List<Contact> getcontactData(String name) {
 		List<Contact> contactList = null;
 		if (this.ContactDataStatement == null)
@@ -127,13 +120,23 @@ public class AddressBookDBService {
 	private void prepareStatementForContactData() {
 		try {
 			Connection connection = addressBookDBService.getConnection();
-			String sql = "SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,contacts.city,"
-					+ "contacts.state,contacts.zip,contacts.phone_number,contacts.email,address_book_name_and_type.Address_book_type "
-					+ " from contacts inner join address_book_name_and_type "
-					+ " on contacts.address_book_name=address_book_name_and_type.Address_book_name WHERE firstName=?; ";
+			String sql = "SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,c.city,"
+					+ "contacts.state,contacts.zip,contacts.phone_number,contacts.email,address_book_name_and_type.address_book_type "
+					+ "from contacts  inner join address_book_name_and_type "
+					+ "on contacts.Address_book_name=address_book_name_and_type.Address_book_name; ";
 			ContactDataStatement = connection.prepareStatement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public List<Contact> getContactForDateRange(LocalDate startDate, LocalDate endDate) {
+		String sql = String.format(
+				"SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,c.city,"
+						+ "contacts.state,contacts.zip,contacts.phone_number,contacts.email,address_book_name_and_type.address_book_type "
+						+ "from contacts  inner join address_book_name_and_type "
+						+ "on contacts.Address_book_name=address_book_name_and_type.Address_book_name; ",
+				startDate, endDate);
+		return this.getContactDetailsUsingSqlQuery(sql);
 	}
 }

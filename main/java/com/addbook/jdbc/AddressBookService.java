@@ -1,9 +1,7 @@
 package com.addbook.jdbc;
 
+import java.time.LocalDate;
 import java.util.List;
-
-import com.addbook.jdbc.AddressBookDBService;
-import com.addbook.jdbc.Contact;
 
 /**
  * @author vishw
@@ -33,11 +31,11 @@ public class AddressBookService {
 			return;
 		Contact Contact = this.getContactData(name);
 		if (Contact != null)
-			Contact.setAddress(address);
+			Contact.address = address;
 	}
 
 	private Contact getContactData(String name) {
-		return this.contactList.stream().filter(contact -> contact.getFirstName().equals(name)).findFirst().orElse(null);
+		return this.contactList.stream().filter(contact -> contact.firstName.equals(name)).findFirst().orElse(null);
 	}
 
 	public boolean checkContactDetailsInSyncWithDB(String name) {
@@ -45,4 +43,8 @@ public class AddressBookService {
 		return contactList.get(0).equals(getContactData(name));
 	}
 
+	public List<Contact> readContactDataForDateRange(LocalDate startDate, LocalDate endDate) {
+		this.contactList = addressBookDBService.getContactForDateRange(startDate, endDate);
+		return contactList;
+	}
 }

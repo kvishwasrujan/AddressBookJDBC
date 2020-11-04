@@ -1,5 +1,6 @@
 package com.addbook.jdbc;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -24,5 +25,15 @@ public class AddressBookTest {
 		addressBookService.updateContactDetails("srujan", "konda");
 		boolean result = addressBookService.checkContactDetailsInSyncWithDB("srujan");
 		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() {
+		AddressBookService addressBookService = new AddressBookService();
+		addressBookService.readContactData();
+		LocalDate startDate = LocalDate.of(2018, 02, 06);
+		LocalDate endDate = LocalDate.now();
+		List<Contact> contactList = addressBookService.readContactDataForDateRange(startDate, endDate);
+		Assert.assertEquals(2, contactList.size());
 	}
 }
