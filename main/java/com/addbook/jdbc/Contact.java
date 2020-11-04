@@ -1,5 +1,7 @@
 package com.addbook.jdbc;
 
+import java.time.LocalDate;
+
 public class Contact {
 	String firstName;
 	private String lastName;
@@ -11,6 +13,7 @@ public class Contact {
 	private String email;
 	public String addressBookName;
 	public String addressBookType;
+	public LocalDate date;
 
 	// constructor
 	public Contact(String firstName, String lastName, String address, String city, String state, String zip,
@@ -30,6 +33,17 @@ public class Contact {
 		this(firstName, lastName, address, city, state, zip, phoneNo, email);
 		this.addressBookName = addressBookName;
 		this.addressBookType = addressBookType;
+	}
+
+	public Contact(String firstName, String lastName, String address, String city, String state, String zip,
+			String phoneNo, String email, String addressBookName, String addressBookType, LocalDate date) {
+		this(firstName, lastName, address, city, state, zip, phoneNo, email, addressBookName, addressBookType);
+		this.date = date;
+	}
+
+	public Contact(String firstName2, String lastName2, String address2, String city2, String state2, String zip2,
+			String phoneNo, Object email2) {
+
 	}
 
 	// getters and setters

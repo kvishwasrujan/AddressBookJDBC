@@ -1,6 +1,11 @@
 package com.addbook.jdbc;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,9 +13,10 @@ import java.util.Map;
  * @author vishw
  *
  */
-public class AddressBookService {
+public class AddressBookService<AddressBookDBServiceNew> {
 	private List<Contact> contactList;
 	private AddressBookDBService addressBookDBService;
+	private AddressBookDBServiceNew addressBookDBServiceNew;
 	private Map<String, Integer> contactByCity;
 
 	public AddressBookService(List<Contact> contactList) {
@@ -20,6 +26,7 @@ public class AddressBookService {
 
 	public AddressBookService() {
 		addressBookDBService = AddressBookDBService.getInstance();
+		addressBookDBServiceNew = AddressBookDBServiceNew.getInstance();
 	}
 
 	public List<Contact> readContactData() {
@@ -40,7 +47,7 @@ public class AddressBookService {
 		return this.contactList.stream().filter(contact -> contact.firstName.equals(name)).findFirst().orElse(null);
 	}
 
-	public boolean checkContactDetailsInSyncWithDB(String name) {
+	public static boolean checkContactDetailsInSyncWithDB(String name) {
 		List<Contact> contactList = addressBookDBService.getcontactData(name);
 		return contactList.get(0).equals(getContactData(name));
 	}
@@ -54,4 +61,11 @@ public class AddressBookService {
 		this.contactByCity = addressBookDBService.getContactByCity();
 		return contactByCity;
 	}
+
+	public static Contact addNewContact(String date, String firstName, String lastName, String address, String city,
+			String state, String zip, String phoneNo, String email) {
+		return AddressBookDBService.insertNewContactToDB(date, firstName, lastName, address, city, state, zip, phoneNo,
+				email);
+	}
+
 }

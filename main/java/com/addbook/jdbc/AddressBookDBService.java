@@ -18,6 +18,7 @@ import java.util.Map;
  *
  */
 public class AddressBookDBService {
+	private static final String phone = null;
 	private PreparedStatement ContactDataStatement;
 	private static AddressBookDBService addressBookDBService;
 
@@ -31,7 +32,7 @@ public class AddressBookDBService {
 		return addressBookDBService;
 	}
 
-	public Connection getConnection() throws SQLException {
+	public static Connection getConnection() throws SQLException {
 		String jdbcURL = "jdbc:mysql://localhost:3306/address_book_service?useSSL=false";
 		String userName = "root";
 		String password = "root";
@@ -50,6 +51,9 @@ public class AddressBookDBService {
 		return this.getContactDetailsUsingSqlQuery(sql);
 	}
 
+	/**
+	 * @param sql
+	 */
 	private List<Contact> getContactDetailsUsingSqlQuery(String sql) {
 		List<Contact> ContactList = null;
 		try (Connection connection = addressBookDBService.getConnection();) {
@@ -62,6 +66,9 @@ public class AddressBookDBService {
 		return ContactList;
 	}
 
+	/**
+	 * @param result
+	 */
 	private List<Contact> getAddressBookData(ResultSet result) {
 		List<Contact> contactList = new ArrayList<>();
 		try {
@@ -89,6 +96,11 @@ public class AddressBookDBService {
 		return this.updateContactDataUsingPreparedStatement(name, address);
 	}
 
+	/**
+	 * @param first_name
+	 * @param address
+	 * @return
+	 */
 	private int updateContactDataUsingPreparedStatement(String first_name, String address) {
 		try (Connection connection = addressBookDBService.getConnection();) {
 			String sql = "update contact_details set address=? where first_name=?";
@@ -130,6 +142,11 @@ public class AddressBookDBService {
 		}
 	}
 
+	/**
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	public List<Contact> getContactForDateRange(LocalDate startDate, LocalDate endDate) {
 		String sql = String.format(
 				"SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,c.city,"
@@ -155,5 +172,39 @@ public class AddressBookDBService {
 			e.printStackTrace();
 		}
 		return contactByCityMap;
+	}
+
+	public Contact addContact(String firstName, String lastName, String address, String city, String state, String zip,
+			String phoneNumber, String email, String addressBookName, String addressBookType, LocalDate date) {
+		String sql = String.format(
+				"INSERT INTO contacts (first_name,last_name,address,city,state,zip,phone_number,email) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s');",
+				date, firstName, lastName, address, city, state, zip, phoneNumber, email);
+		Contact contact = null;
+		try (Connection connection = getConnection()) {
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			int result = preparedStatement.executeUpdate();
+			if (result == 1)
+				contact = new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return contact;
+	}
+
+	public static Contact insertNewContactToDB(String date, String firstName, String lastName, String address,
+			String city, String state, String zip, String phoneNo, String email) {
+		String sql = String.format(
+				"INSERT INTO contacs (date_added,first_name,last_name,address,city,state,zip,phone_number,email) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s');",
+				date, firstName, lastName, address, city, state, zip, phoneNo, email);
+		Contact contact = null;
+		try (Connection connection = getConnection()) {
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			int result = preparedStatement.executeUpdate();
+			if (result == 1)
+				contact = new Contact(firstName, lastName, address, city, state, zip, phoneNo, email);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return contact;
 	}
 }

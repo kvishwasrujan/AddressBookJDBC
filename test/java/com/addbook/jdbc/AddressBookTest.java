@@ -1,5 +1,7 @@
 package com.addbook.jdbc;
 
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,15 @@ public class AddressBookTest {
 		addressBookService.readContactData();
 		Map<String, Integer> contactByCityMap = addressBookService.readContactByCityOrState();
 		Integer count = 2;
-		Assert.assertEquals(count, contactByCityMap.get("hanamkonda"));
+		Assert.assertEquals(count, contactByCityMap.get("hnk"));
 	}
+
+	@Test
+	public void givenNewContact_WhenAdded_ShouldSyncWithDB() {
+		AddressBookService.addNewContact("2018-08-08", "srujan", "konda", "Gandhinagar", "Hnk", "wgl", "873485",
+				"7289472389", "vishwasr@gmail.com");
+		boolean isSynced = AddressBookService.checkContactDetailsInSyncWithDB("srujan");
+		assertTrue(isSynced);
+	}
+
 }
