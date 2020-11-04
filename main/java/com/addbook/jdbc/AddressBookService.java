@@ -2,6 +2,7 @@ package com.addbook.jdbc;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author vishw
@@ -10,6 +11,7 @@ import java.util.List;
 public class AddressBookService {
 	private List<Contact> contactList;
 	private AddressBookDBService addressBookDBService;
+	private Map<String, Integer> contactByCity;
 
 	public AddressBookService(List<Contact> contactList) {
 		this();
@@ -46,5 +48,10 @@ public class AddressBookService {
 	public List<Contact> readContactDataForDateRange(LocalDate startDate, LocalDate endDate) {
 		this.contactList = addressBookDBService.getContactForDateRange(startDate, endDate);
 		return contactList;
+	}
+
+	public Map<String, Integer> readContactByCityOrState() {
+		this.contactByCity = addressBookDBService.getContactByCity();
+		return contactByCity;
 	}
 }

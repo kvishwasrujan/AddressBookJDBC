@@ -139,4 +139,21 @@ public class AddressBookDBService {
 				startDate, endDate);
 		return this.getContactDetailsUsingSqlQuery(sql);
 	}
+
+	public Map<String, Integer> getContactByCity() {
+		String sql = "SELECT city, COUNT(firstName) as count from contact_details group by city; ";
+		Map<String, Integer> contactByCityMap = new HashMap<>();
+		try (Connection connection = addressBookDBService.getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			while (result.next()) {
+				String city = result.getString("city");
+				Integer count = result.getInt("count");
+				contactByCityMap.put(city, count);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return contactByCityMap;
+	}
 }
