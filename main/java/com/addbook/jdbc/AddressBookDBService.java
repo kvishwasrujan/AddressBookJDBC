@@ -13,8 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author vishw
+ *
+ */
 public class AddressBookDBService {
-	private static final String phone = null;
 	private PreparedStatement ContactDataStatement;
 	private static AddressBookDBService addressBookDBService;
 
@@ -28,7 +31,7 @@ public class AddressBookDBService {
 		return addressBookDBService;
 	}
 
-	public static Connection getConnection() throws SQLException {
+	public Connection getConnection() throws SQLException {
 		String jdbcURL = "jdbc:mysql://localhost:3306/address_book_service?useSSL=false";
 		String userName = "root";
 		String password = "root";
@@ -40,10 +43,10 @@ public class AddressBookDBService {
 	}
 
 	public List<Contact> readData() {
-		String sql = "SELECT c.first_name, c.last_name,c.address_book_name,c.address,c.city,"
-				+ "c.state,c.zip,c.phone_number,c.email,abd.address_book_type "
-				+ "from contact_details c inner join address_book_dict abd "
-				+ "on c.address_book_name=abd.address_book_name; ";
+		String sql = "\"SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,contacts.city,\"\r\n"
+				+ "					+ \"contacts.state,contacts.zip,contacts.phone_number,contacts.email,address_book_name_and_type.Address_book_type \"\r\n"
+				+ "					+ \" from contacts inner join address_book_name_and_type \"\r\n"
+				+ "					+ \" on contacts.address_book_name=address_book_name_and_type.Address_book_name WHERE firstName=?";
 		return this.getContactDetailsUsingSqlQuery(sql);
 	}
 
@@ -86,6 +89,10 @@ public class AddressBookDBService {
 		return this.updateContactDataUsingPreparedStatement(name, address);
 	}
 
+	/**
+	 * @param first_name
+	 * @param address
+	 */
 	private int updateContactDataUsingPreparedStatement(String first_name, String address) {
 		try (Connection connection = addressBookDBService.getConnection();) {
 			String sql = "update contact_details set address=? where first_name=?";
@@ -100,6 +107,9 @@ public class AddressBookDBService {
 		return 0;
 	}
 
+	/**
+	 * @param name
+	 */
 	public List<Contact> getcontactData(String name) {
 		List<Contact> contactList = null;
 		if (this.ContactDataStatement == null)
@@ -117,74 +127,13 @@ public class AddressBookDBService {
 	private void prepareStatementForContactData() {
 		try {
 			Connection connection = addressBookDBService.getConnection();
-			String sql = "SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,c.city,"
-					+ "contacts.state,contacts.zip,contacts.phone_number,contacts.email,address_book_name_and_type.address_book_type "
-					+ "from contacts  inner join address_book_name_and_type "
-					+ "on contacts.Address_book_name=address_book_name_and_type.Address_book_name; ";
+			String sql = "SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,contacts.city,"
+					+ "contacts.state,contacts.zip,contacts.phone_number,contacts.email,address_book_name_and_type.Address_book_type "
+					+ " from contacts inner join address_book_name_and_type "
+					+ " on contacts.address_book_name=address_book_name_and_type.Address_book_name WHERE firstName=?; ";
 			ContactDataStatement = connection.prepareStatement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public List<Contact> getContactForDateRange(LocalDate startDate, LocalDate endDate) {
-		String sql = String.format(
-				"SELECT contacts.first_name, contacts.last_name,contacts.address_book_name,contacts.address,c.city,"
-						+ "contacts.state,contacts.zip,contacts.phone_number,contacts.email,address_book_name_and_type.address_book_type "
-						+ "from contacts  inner join address_book_name_and_type "
-						+ "on contacts.Address_book_name=address_book_name_and_type.Address_book_name; ",
-				startDate, endDate);
-		return this.getContactDetailsUsingSqlQuery(sql);
-	}
-
-	public Map<String, Integer> getContactByCity() {
-		String sql = "SELECT city, COUNT(firstName) as count from contact_details group by city; ";
-		Map<String, Integer> contactByCityMap = new HashMap<>();
-		try (Connection connection = addressBookDBService.getConnection()) {
-			Statement statement = connection.createStatement();
-			ResultSet result = statement.executeQuery(sql);
-			while (result.next()) {
-				String city = result.getString("city");
-				Integer count = result.getInt("count");
-				contactByCityMap.put(city, count);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return contactByCityMap;
-	}
-
-	public Contact addContact(String firstName, String lastName, String address, String city, String state, String zip,
-			String phoneNumber, String email, String addressBookName, String addressBookType, LocalDate date) {
-		String sql = String.format(
-				"INSERT INTO contacts (first_name,last_name,address,city,state,zip,phone_number,email) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s');",
-				date, firstName, lastName, address, city, state, zip, phoneNumber, email);
-		Contact contact = null;
-		try (Connection connection = getConnection()) {
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			int result = preparedStatement.executeUpdate();
-			if (result == 1)
-				contact = new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return contact;
-	}
-
-	public static Contact insertNewContactToDB(String date, String firstName, String lastName, String address,
-			String city, String state, String zip, String phoneNo, String email) {
-		String sql = String.format(
-				"INSERT INTO contacs (date_added,first_name,last_name,address,city,state,zip,phone_number,email) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s');",
-				date, firstName, lastName, address, city, state, zip, phoneNo, email);
-		Contact contact = null;
-		try (Connection connection = getConnection()) {
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			int result = preparedStatement.executeUpdate();
-			if (result == 1)
-				contact = new Contact(firstName, lastName, address, city, state, zip, phoneNo, email);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return contact;
 	}
 }

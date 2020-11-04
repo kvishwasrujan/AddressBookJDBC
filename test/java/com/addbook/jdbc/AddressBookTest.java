@@ -16,4 +16,13 @@ public class AddressBookTest {
 		List<Contact> contactList = addressBookService.readContactData();
 		Assert.assertEquals(2, contactList.size());
 	}
+
+	@Test
+	public void givenNewSalaryForEmployee_WhenUpdatedUsingPreparedStatement_ShouldSyncWithDB() {
+		AddressBookService addressBookService = new AddressBookService();
+		List<Contact> contactList = addressBookService.readContactData();
+		addressBookService.updateContactDetails("srujan", "konda");
+		boolean result = addressBookService.checkContactDetailsInSyncWithDB("srujan");
+		Assert.assertTrue(result);
+	}
 }
