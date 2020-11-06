@@ -114,4 +114,29 @@ public class AddressBookTest {
 		return arrayOfcontacts;
 	}
 
+	@Test
+	public void givenMultipleEmployees_readFromJsonServer_ShouldMatch() {
+		AddressBookService addressBookService;
+		Contact[] arrayOfContacts = getContactList();
+		addressBookService = new AddressBookService(Arrays.asList(arrayOfContacts));
+		Contact[] arrayOfContactsJson = {
+				new Contact("2018-08-08", "aarush", "Reddy", "Naimnagar", "Hnk", "wgl", "98765", "9356237239",
+						"aarush@gmail.com", "Friends"),
+				new Contact("2018-02-02", "Anil", "Varma", "Bank Colony", "karimnagar", "telangana", "8738299",
+						"1234567890", "anilvarma@gmail.com", "Family"),
+				new Contact("2018-05-01", "Krishna", "Burra", "Madhavnagar", "bhopal", "Madhya pradesh", "6343738",
+						"9087654321", "krishnaburra@gmail.com", "Friends")
+
+		};
+		for (Contact contact : arrayOfContactsJson) {
+			Response response = addEmployeeToJsonServer(contact);
+			int statusCode = response.getStatusCode();
+			Assert.assertEquals(201, statusCode);
+			contact = new Gson().fromJson(response.asString(), Contact.class);
+			addressBookService.addEmployee(contact, IOService.REST_IO);
+		}
+		long entries = addressBookService.countEntries(IOService.REST_IO);
+		Assert.assertEquals(5, entries);
+	}
+
 }

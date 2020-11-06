@@ -92,7 +92,7 @@ public class AddressBookService<AddressBookDBServiceNew> {
 			}
 	}
 
-	public void add(Contact contactJson, IOService ioService) {
+	public void addEmployee(Contact contactJson, IOService ioService) {
 		if (ioService.equals(IOService.DB_IO))
 			this.addNewContact(contactJson.date, contactJson.firstName, contactJson.lastName, contactJson.address,
 					contactJson.city, contactJson.state, contactJson.zip, contactJson.phoneNumber, contactJson.email);
