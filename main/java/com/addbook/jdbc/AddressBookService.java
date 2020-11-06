@@ -46,7 +46,7 @@ public class AddressBookService<AddressBookDBServiceNew> {
 			Contact.address = address;
 	}
 
-	private static Contact getContactData(String name) {
+	static Contact getContactData(String name) {
 		return contactList.stream().filter(contact -> contact.firstName.equals(name)).findFirst().orElse(null);
 	}
 
@@ -102,5 +102,13 @@ public class AddressBookService<AddressBookDBServiceNew> {
 
 	public long countEntries(IOService ioService) {
 		return contactList.size();
+	}
+
+	public void updateContact(String FirstName, String city, IOService ioService) {
+		if (ioService.equals(IOService.REST_IO)) {
+			Contact contact = this.getContactData(FirstName);
+			if (contact != null)
+				contact.city = city;
+		}
 	}
 }
