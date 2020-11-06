@@ -17,11 +17,10 @@ public class AddressBookService<AddressBookDBServiceNew> {
 	public enum IOService {
 		DB_IO, REST_IO
 	}
-
+	private static Map<String, Integer> contactByCity = null;
+	private static final Object contact = null;
 	private static List<Contact> contactList;
 	private static AddressBookDBService addressBookDBService;
-	private AddressBookDBServiceNew addressBookDBServiceNew;
-	private Map<String, Integer> contactByCity;
 
 	public AddressBookService(List<Contact> contactList) {
 		this();
@@ -65,10 +64,11 @@ public class AddressBookService<AddressBookDBServiceNew> {
 		return contactByCity;
 	}
 
+
 	public static Contact addNewContact(String date, String firstName, String lastName, String address, String city,
-			String state, String zip, String phoneNo, String email) {
-		return AddressBookDBService.insertNewContactToDB(date, firstName, lastName, address, city, state, zip, phoneNo,
-				email);
+			String state, String zip, String phoneNo, String email)  {
+		return AddressBookDBService.insertNewContactToDB(date, firstName, lastName, address, city, state, zip,
+				phoneNo, email);
 	}
 
 	public static void addNewMultipleContacts(List<Contact> contacts) {
@@ -76,11 +76,11 @@ public class AddressBookService<AddressBookDBServiceNew> {
 		contacts.forEach(contact -> {
 			status.put(contact.hashCode(), false);
 			Runnable task = () -> {
-				AddressBookDBService.insertNewContactToDB("2020-10-30", contact.getFirstName(), contact.getLastName(),
-						contact.getAddress(), contact.getCity(), contact.getState(), contact.getZip(),
-						contact.getPhoneNumber(), contact.getEmail());
-				status.put(contact.hashCode(), true);
-
+				 AddressBookDBService.insertNewContactToDB("2020-10-30", contact.getFirstName(),
+							contact.getLastName(), contact.getAddress(), contact.getCity(), contact.getState(),
+							contact.getZip(), contact.getPhoneNumber(), contact.getEmail());
+					status.put(contact.hashCode(), true);
+				
 			};
 			Thread thread = new Thread(task, contact.getFirstName());
 			thread.start();
@@ -94,21 +94,21 @@ public class AddressBookService<AddressBookDBServiceNew> {
 
 	public void addEmployee(Contact contactJson, IOService ioService) {
 		if (ioService.equals(IOService.DB_IO))
-			this.addNewContact(contactJson.date, contactJson.firstName, contactJson.lastName, contactJson.address,
-					contactJson.city, contactJson.state, contactJson.zip, contactJson.phoneNumber, contactJson.email);
-		contactList.add(contactJson);
-
+			this.addNewContact(contactJson.date,contactJson.firstName,contactJson.lastName,contactJson.address,contactJson.city,
+					contactJson.state,contactJson.zip,contactJson.phoneNumber,contactJson.email);
+		 contactList.add(contactJson);
+		
 	}
 
-	public long countEntries(IOService ioService) {
+	public static long countEntries(IOService ioService) {
 		return contactList.size();
 	}
 
-	public void updateContact(String FirstName, String city, IOService ioService) {
-		if (ioService.equals(IOService.REST_IO)) {
-			Contact contact = this.getContactData(FirstName);
-			if (contact != null)
-				contact.city = city;
-		}
+	public  void deleteEmployeePayroll(String firstName, IOService ioService) {
+		if(ioService.equals(IOService.REST_IO))
+			Contact contact = this.getContactData(firstName);
+		    contactList.remove(contact);
+
+		
 	}
 }
