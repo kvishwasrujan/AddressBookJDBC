@@ -14,6 +14,10 @@ import java.util.Map;
  *
  */
 public class AddressBookService<AddressBookDBServiceNew> {
+	public enum IOService {
+		DB_IO, REST_IO
+	}
+
 	private static List<Contact> contactList;
 	private static AddressBookDBService addressBookDBService;
 	private AddressBookDBServiceNew addressBookDBServiceNew;
@@ -86,5 +90,17 @@ public class AddressBookService<AddressBookDBServiceNew> {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 			}
+	}
+
+	public void add(Contact contactJson, IOService ioService) {
+		if (ioService.equals(IOService.DB_IO))
+			this.addNewContact(contactJson.date, contactJson.firstName, contactJson.lastName, contactJson.address,
+					contactJson.city, contactJson.state, contactJson.zip, contactJson.phoneNumber, contactJson.email);
+		contactList.add(contactJson);
+
+	}
+
+	public long countEntries(IOService ioService) {
+		return contactList.size();
 	}
 }

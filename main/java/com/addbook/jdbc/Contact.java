@@ -4,16 +4,16 @@ import java.time.LocalDate;
 
 public class Contact {
 	String firstName;
-	private String lastName;
+	String lastName;
 	String address;
-	private String city;
-	private String state;
-	private String zip;
-	private String phoneNumber;
-	private String email;
+	String city;
+	String state;
+	String zip;
+	String phoneNumber;
+	String email;
 	public String addressBookName;
 	public String addressBookType;
-	public LocalDate date;
+	public String date;
 
 	// constructor
 	public Contact(String firstName, String lastName, String address, String city, String state, String zip,
@@ -36,14 +36,9 @@ public class Contact {
 	}
 
 	public Contact(String firstName, String lastName, String address, String city, String state, String zip,
-			String phoneNo, String email, String addressBookName, String addressBookType, LocalDate date) {
+			String phoneNo, String email, String addressBookName, String addressBookType, String date) {
 		this(firstName, lastName, address, city, state, zip, phoneNo, email, addressBookName, addressBookType);
 		this.date = date;
-	}
-
-	public Contact(String firstName2, String lastName2, String address2, String city2, String state2, String zip2,
-			String phoneNo, Object email2) {
-
 	}
 
 	// getters and setters
